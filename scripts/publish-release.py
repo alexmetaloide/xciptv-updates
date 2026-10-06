@@ -24,6 +24,9 @@ existing = subprocess.run(['gh', 'release', 'view', tag], stdout=subprocess.DEVN
 if existing.returncode == 0:
     print(f'Release {tag} already exists; leaving its assets unchanged.')
 else:
-    subprocess.run(['gh', 'release', 'create', tag, str(apk), str(checksum),
-                    '--prerelease', '--title', f'XCIPTV Android {version}',
-                    '--notes-file', str(notes)], check=True)
+    command = ['gh', 'release', 'create', tag, str(apk), str(checksum),
+               '--title', f'XCIPTV Android {version}',
+               '--notes-file', str(notes)]
+    if '-' in version:
+        command.append('--prerelease')
+    subprocess.run(command, check=True)
