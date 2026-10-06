@@ -1,0 +1,7 @@
+{
+  "version": "0.2.3",
+  "tag": "android-v0.2.3",
+  "apk": "Metalloide-IPTV-Android-0.2.3.apk",
+  "sha256": "5bb4562c3511a10a8334b538a83b8390bcd07e6d99a6c5170a959be8bec5535a",
+  "notes": "Versão final 0.2.3 do Metalloide IPTV. Inclui Continuar assistindo, histórico por conta com busca e filtros, retomada de filmes e episódios, backup v3 sanitizado, validação segura de atualizações Android e melhorias de layout em smartphones no modo paisagem."
+}
