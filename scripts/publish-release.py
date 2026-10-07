@@ -10,7 +10,7 @@ version = descriptor['version']
 if not re.fullmatch(r'\d+\.\d+\.\d+(?:-[A-Za-z]+\.\d+)?', version):
     raise ValueError('Invalid version')
 tag = f'android-v{version}'
-name = f'Metalloide-IPTV-Android-{version}.apk'
+name = f'MTPLAYER-Android-{version}.apk'
 if descriptor['tag'] != tag or descriptor['apk'] != name:
     raise ValueError('Version, tag and APK name must match')
 apk = Path('apks') / name
@@ -25,7 +25,7 @@ if existing.returncode == 0:
     print(f'Release {tag} already exists; leaving its assets unchanged.')
 else:
     command = ['gh', 'release', 'create', tag, str(apk), str(checksum),
-               '--title', f'XCIPTV Android {version}',
+               '--title', f'MTPLAYER Android/Android TV {version}',
                '--notes-file', str(notes)]
     if '-' in version:
         command.append('--prerelease')
