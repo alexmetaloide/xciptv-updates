@@ -1,10 +1,11 @@
-# Atualizações do xciptv Android
+# Atualizações do MTPLAYER
 
-Canal público de APKs de distribuição assinados. O código-fonte e a chave Android ficam no repositório privado `alexmetaloide/xciptv`.
+Canal público oficial de APKs assinados do **MTPLAYER** para Android e Android TV.
 
-Baixe o APK em **Releases**. As compilações debug do repositório de código são exclusivas para testes e não atualizam a versão de distribuição.
+Baixe a versão atual em **Releases**. O mesmo APK atende smartphones, tablets e Android TV/TV Box compatíveis.
 
-O app consulta este canal e usa o instalador do Android para confirmar a atualização, preservando dados quando o APK tem o mesmo pacote e certificado. As betas antigas com outra assinatura precisam de uma migração única após salvar os dados necessários.
+O MTPLAYER instalado consulta automaticamente este repositório após iniciar e também pelo botão **Atualizar aplicativo**. Quando existe uma versão mais nova, o app baixa o APK oficial, valida pacote, versionCode, versão mínima do Android e assinatura digital, e então abre o instalador do Android para concluir a atualização preservando os dados.
 
-Quando o workflow privado enviar `apks/` e `release.json`, o workflow público verifica o checksum e cria a Release correspondente. Os secrets de assinatura nunca são enviados a este repositório.
-Canal público de APKs assinados do xciptv. O código-fonte permanece privado.
+As versões de distribuição usam o pacote `com.metalloide.iptv` e devem continuar assinadas com a mesma chave permanente. Builds debug são apenas para testes e não participam do canal de atualização.
+
+O pipeline de release envia o APK assinado para `apks/`, atualiza `release.json`, verifica o SHA-256 e cria a Release `android-v<versão>`. A chave de assinatura permanece protegida no repositório de código e nunca é publicada aqui.
