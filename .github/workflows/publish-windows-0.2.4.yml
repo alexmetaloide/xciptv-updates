@@ -1,0 +1,103 @@
+name: Publish MTPLAYER Windows
+
+on:
+  push:
+    paths:
+      - ".github/release-triggers/windows-v0.2.4.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-mtplayer-windows-0.2.4
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout MTPLAYER source
+        uses: actions/checkout@v4
+        with:
+          repository: alexmetaloide/xciptv
+          ref: ea92e075a871b33d1c76d8d870f13108e4b9a4d3
+          path: source
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: source/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: source
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate source and run tests
+        working-directory: source
+        run: pnpm check
+
+      - name: Build Windows portable
+        working-directory: source
+        run: pnpm build:portable
+
+      - name: Prepare release assets
+        id: assets
+        shell: pwsh
+        run: |
+          $asset = Get-ChildItem "source/outputs/windows/MTPLAYER-Portable-0.2.4.exe" | Select-Object -First 1
+          if (-not $asset) {
+            throw "MTPLAYER Windows portable executable was not generated."
+          }
+          $hash = (Get-FileHash -LiteralPath $asset.FullName -Algorithm SHA256).Hash.ToUpperInvariant()
+          $shaFile = "$($asset.FullName).sha256"
+          "$hash  $($asset.Name)" | Set-Content -LiteralPath $shaFile -Encoding ascii
+          "asset=$($asset.FullName)" >> $env:GITHUB_OUTPUT
+          "sha_file=$shaFile" >> $env:GITHUB_OUTPUT
+          "sha256=$hash" >> $env:GITHUB_OUTPUT
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MTPLAYER-Windows-0.2.4
+          path: |
+            source/outputs/windows/MTPLAYER-Portable-0.2.4.exe
+            source/outputs/windows/MTPLAYER-Portable-0.2.4.exe.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish official GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: windows-v0.2.4
+          RELEASE_TITLE: MTPLAYER Windows 0.2.4
+          SOURCE_COMMIT: ea92e075a871b33d1c76d8d870f13108e4b9a4d3
+          SHA256: ${{ steps.assets.outputs.sha256 }}
+          ASSET: ${{ steps.assets.outputs.asset }}
+          SHA_FILE: ${{ steps.assets.outputs.sha_file }}
+        run: |
+          $notes = @"
+          MTPLAYER para Windows 64-bit — versão portátil 0.2.4.
+
+          - Produto: MTPLAYER
+          - Plataforma: Windows x64
+          - Formato: executável portátil
+          - Código-fonte: alexmetaloide/xciptv@$env:SOURCE_COMMIT
+          - SHA-256: $env:SHA256
+          "@
+
+          if (gh release view "$env:RELEASE_TAG" --repo "$env:GITHUB_REPOSITORY" 2>$null) {
+            gh release upload "$env:RELEASE_TAG" "$env:ASSET" "$env:SHA_FILE" --clobber --repo "$env:GITHUB_REPOSITORY"
+            gh release edit "$env:RELEASE_TAG" --title "$env:RELEASE_TITLE" --notes "$notes" --repo "$env:GITHUB_REPOSITORY"
+          } else {
+            gh release create "$env:RELEASE_TAG" "$env:ASSET" "$env:SHA_FILE" --title "$env:RELEASE_TITLE" --notes "$notes" --repo "$env:GITHUB_REPOSITORY"
+          }
