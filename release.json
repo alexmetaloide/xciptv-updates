@@ -1,7 +1,7 @@
 {
-  "version": "0.2.4",
-  "tag": "android-v0.2.4",
-  "apk": "Metalloide-IPTV-Android-0.2.4.apk",
-  "sha256": "2130139fe4dd53c93d4115a85e0084e07f096471eaa61e83d6a4ae7ce4d25707",
-  "notes": "Atualização xciptv Android 0.2.4, assinada com a chave permanente."
+  "version": "0.9.33",
+  "tag": "android-v0.9.33",
+  "apk": "MTPLAYER-Android-0.9.33.apk",
+  "sha256": "af148b1f7cf52bea783f6a640780efb804a8e6be09cf61b57478b8dbd87e3390",
+  "notes": "Atualização MTPLAYER Android/Android TV 0.9.33, assinada com a chave permanente."
 }
